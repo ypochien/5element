@@ -11,15 +11,19 @@ def set_init(MainWindow):
     lbl.setPixmap(pixmap)
     MainWindow.horizontalLayout.addWidget(lbl)
     MainWindow.setWindowIcon(QtGui.QIcon('img/shioaji.png')) 
-        
-if __name__ == "__main__":
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-    app = QApplication(sys.argv)
-    ui_file = QFile("ui/farmtrade.ui")
+
+def load_ui(filename="ui/farmtrade.ui"):
+    ui_file = QFile(filename)
     ui_file.open(QFile.ReadOnly)
     loader = QUiLoader()
     window = loader.load(ui_file)
-    set_init(window)
     ui_file.close()
+    return window
+
+if __name__ == "__main__":
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
+    app = QApplication(sys.argv)
+    window = load_ui()
+    set_init(window)
     window.show()
     sys.exit(app.exec_())
