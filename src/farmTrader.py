@@ -29,7 +29,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.rtUpdate = RTUpdate()
         self.rtUpdate.update_price_caller.connect(self.update_price_worker)
         self.rtUpdate.update_bidask_caller.connect(self.update_bidask_worker)
-        # self.api = sj.Shioaji()
+        self.api = sj.Shioaji()
 
     def logo(self):
         pixmap = QtGui.QPixmap("img/shioaji.png")
@@ -39,14 +39,45 @@ class mainUI(QMainWindow, Ui_MainWindow):
         return lbl
 
     def quote_msg(self, topic, msg):
-        lst = [
-            msg["Code"],
-            msg["Close"][0],
-            msg["DiffPrice"][0],
-            msg["Volume"][0],
-            msg["VolSum"][0],
-        ]
-        self.rtUpdate.update_price_caller.emit(lst)
+        if topic[0] == "L":
+            lst = [
+                msg["Code"],
+                msg["Close"][0],
+                msg["DiffPrice"][0],
+                msg["Volume"][0],
+                msg["VolSum"][0],
+            ]
+            self.rtUpdate.update_price_caller.emit(lst)
+        if topic[0] == "Q":
+            lst = list(range(0, 20))
+            # print(topic, msg)
+            # Q/TFE/TXFH9
+            """
+            {
+                "AskPrice": [10459.0, 10460.0, 10461.0, 10462.0, 10463.0],
+                "AskVolSum": 302,
+                "AskVolume": [6, 50, 75, 100, 71],
+                "BidPrice": [10458.0, 10457.0, 10456.0, 10455.0, 10454.0],
+                "BidVolSum": 183,
+                "BidVolume": [25, 38, 49, 37, 34],
+                "Code": "TXFH9",
+                "Date": "2019/08/19",
+                "DiffAskVol": [3, 0, 0, 0, 0],
+                "DiffAskVolSum": 3,
+                "DiffBidVol": [3, 0, 0, -1, 0],
+                "DiffBidVolSum": 2,
+                "FirstDerivedAskPrice": 10461.0,
+                "FirstDerivedAskVolume": 10,
+                "FirstDerivedBidPrice": 10457.0,
+                "FirstDerivedBidVolume": 4,
+                "TargetKindPrice": 10479.52,
+                "Time": "10:38:30.616000",
+            }
+            """
+            lst = (
+                msg["BidPrice"] + msg["BidVolume"] + msg["AskPrice"] + msg["AskVolume"]
+            )
+            self.rtUpdate.update_bidask_caller.emit(lst)
 
     def bidask_msg(self, topic, msg):
         lst = list(range(0, 20))
@@ -84,8 +115,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def login(self):
-        self.bidask_msg(None, None)
-        return
+        # self.bidask_msg(None, None)
+        # return
         user = {
             "uid": self.trade.id_edit.text(),
             "password": self.trade.password_edit.text(),
@@ -98,11 +129,11 @@ class mainUI(QMainWindow, Ui_MainWindow):
             return
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
+        self.api.quote.set_callback(self.quote_msg)
         self.api.quote.subscribe(self.api.Contracts.Futures["TXFH9"])
-        self.api.qoute.subscribe(
+        self.api.quote.subscribe(
             self.api.Contracts.Futures["TXFH9"], quote_type="bidask"
         )
-        self.api.quote.set_callback(self.quote_msg)
 
 
 class trade_widget(QWidget, Ui_Form):
