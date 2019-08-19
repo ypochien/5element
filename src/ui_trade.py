@@ -7,7 +7,7 @@
 # Form implementation generated from reading ui file 'ui/trade.ui',
 # licensing of 'ui/trade.ui' applies.
 #
-# Created: Mon Aug 19 23:10:39 2019
+# Created: Mon Aug 19 23:25:37 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!

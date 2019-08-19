@@ -10,8 +10,6 @@ import asyncio
 
 
 class RTUpdate(QObject):
-    # update_price_caller = Signal((list,))
-    # update_bidask_caller = Signal((dict,))
     caller = Signal((str, dict))
 
 
@@ -26,8 +24,6 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.setWindowIcon(QtGui.QIcon("img/shioaji.png"))
         # event
         self.rtUpdate = RTUpdate()
-        # self.rtUpdate.update_price_caller.connect(self.update_price_worker)
-        # self.rtUpdate.update_bidask_caller.connect(self.update_bidask_worker)
         self.rtUpdate.caller.connect(self.rt_worker)
         self.api = sj.Shioaji()
 
@@ -59,72 +55,21 @@ class mainUI(QMainWindow, Ui_MainWindow):
           QUT/idcdmzpcr01/TSE/2330
          {'AskPrice': [253.0, 253.5, 254.0, 254.5, 255.0], 'AskVolume': [2429, 2818, 1266, 624, 2313], 'BidPrice': [252.5, 252.0, 251.5, 251.0, 250.5], 'BidVolume': [377, 809, 712, 1607, 883], 'Date': '2019/08/19', 'Time': '13:06:24.674650'}
         """
-        tableWidget = self.trade.bidask_grid
-        for row, i in enumerate(msg["BidPrice"]):
-            item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 0, item)
-        for row, i in enumerate(msg["BidVolume"]):
-            item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 1, item)
-        for row, i in enumerate(msg["AskPrice"]):
-            item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 2, item)
-        for row, i in enumerate(msg["AskVolume"]):
-            item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 3, item)
+        self.trade.update_bidask(code, msg)
 
     def proc_q(self, code, msg):
         """
         Q/TFE/TXFH9 
          {'AskPrice': [10481.0, 10482.0, 10483.0, 10484.0, 10485.0], 'AskVolSum': 321, 'AskVolume': [14, 38, 46, 86, 137], 'BidPrice': [10480.0, 10479.0, 10478.0, 10477.0, 10476.0], 'BidVolSum': 309, 'BidVolume': [27, 65, 71, 62, 84], 'Code': 'TXFH9', 'Date': '2019/08/19', 'DiffAskVol': [0, 0, 0, 0, 0], 'DiffAskVolSum': 0, 'DiffBidVol': [1, 0, 0, 0, 0], 'DiffBidVolSum': 1, 'FirstDerivedAskPrice': 10482.0, 'FirstDerivedAskVolume': 5, 'FirstDerivedBidPrice': 10479.0, 'FirstDerivedBidVolume': 9, 'TargetKindPrice': 10502.04, 'Time': '13:06:24.491000'}
         """
-        tableWidget = self.trade.bidask_grid
-        for row, i in enumerate(msg["BidVolume"]):
-            item = QTableWidgetItem()
-            item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            item.setText(str(i))
-            tableWidget.setItem(row + 5, 0, item)
-        pricelst = list(reversed(msg["AskPrice"])) + msg["BidPrice"]
-        for row, i in enumerate(pricelst):
-            item = QTableWidgetItem()
-            item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            item.setText(str(i))
-            tableWidget.setItem(row, 1, item)
-        for row, i in enumerate(reversed(msg["AskVolume"])):
-            item = QTableWidgetItem()
-            item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            item.setText(str(i))
-            tableWidget.setItem(row, 3, item)
+        self.trade.update_bidask(code, msg)
 
     def proc_l(self, code, msg):
         """
         L/TFE/TXFH9
          {'Amount': [10480.0], 'AmountSum': [804564419.0], 'AvgPrice': [10477.736352034171], 'Close': [10480.0], 'Code': 'TXFH9', 'Date': '2019/08/19', 'DiffPrice': [68.0], 'DiffRate': [0.6530925854782943], 'DiffType': [2], 'High': [10489.0], 'Low': [10419.0], 'Open': 10436.0, 'TargetKindPrice': 10502.04, 'TickType': [2], 'Time': '13:06:24.513000', 'TradeAskVolSum': 42629, 'TradeBidVolSum': 40982, 'VolSum': [76788], 'Volume': [1]}
         """
-        self.trade.code_edit.setText(msg["Code"])
-        self.trade.curr_price.display(msg["Close"][0])
-        self.trade.diff_price.display(msg["DiffPrice"][0])
-        self.trade.tick_vol.display(msg["Volume"][0])
-        self.trade.total_vol.display(msg["VolSum"][0])
-        item = QTableWidgetItem()
-        item.setTextAlignment(QtCore.Qt.AlignHCenter)
-        item.setText(str(msg["Volume"][0]))
-        itemClear = QTableWidgetItem()
-        itemClear.setText(" ")
-        tableWidget = self.trade.bidask_grid
-        ask = tableWidget.item(4, 1).text()
-        bid = tableWidget.item(5, 1).text()
-        # print(ask, bid, msg["Close"][0])
-        if str(msg["Close"][0]) == ask:
-            tableWidget.setItem(4, 2, item)
-            tableWidget.setItem(5, 2, itemClear)
-        if str(msg["Close"][0]) == bid:
-            tableWidget.setItem(4, 2, itemClear)
-            tableWidget.setItem(5, 2, item)
+        self.trade.update_quote(code, msg)
 
     def logo(self):
         pixmap = QtGui.QPixmap("img/shioaji.png")
@@ -197,6 +142,46 @@ class trade_widget(QWidget, Ui_Form):
         self.bidask_grid.setItemDelegateForColumn(0, delegate)
         self.bidask_grid.setItemDelegateForColumn(3, delegate)
 
+    def update_bidask(self, topic, msg):
+        tableWidget = self.bidask_grid
+        for row, i in enumerate(msg["BidVolume"]):
+            item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setText(str(i))
+            tableWidget.setItem(row + 5, 0, item)
+        pricelst = list(reversed(msg["AskPrice"])) + msg["BidPrice"]
+        for row, i in enumerate(pricelst):
+            item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setText(str(i))
+            tableWidget.setItem(row, 1, item)
+        for row, i in enumerate(reversed(msg["AskVolume"])):
+            item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setText(str(i))
+            tableWidget.setItem(row, 3, item)
+
+    def update_quote(self, topic, msg):
+        self.code_edit.setText(msg["Code"])
+        self.curr_price.display(msg["Close"][0])
+        self.diff_price.display(msg["DiffPrice"][0])
+        self.tick_vol.display(msg["Volume"][0])
+        self.total_vol.display(msg["VolSum"][0])
+        item = QTableWidgetItem()
+        item.setTextAlignment(QtCore.Qt.AlignHCenter)
+        item.setText(str(msg["Volume"][0]))
+        itemClear = QTableWidgetItem()
+        itemClear.setText(" ")
+        tableWidget = self.bidask_grid
+        ask = tableWidget.item(4, 1).text()
+        bid = tableWidget.item(5, 1).text()
+        if str(msg["Close"][0]) == ask:
+            tableWidget.setItem(4, 2, item)
+            tableWidget.setItem(5, 2, itemClear)
+        if str(msg["Close"][0]) == bid:
+            tableWidget.setItem(4, 2, itemClear)
+            tableWidget.setItem(5, 2, item)
+
     @Slot()
     def _login(self):
         if self.login:
@@ -207,6 +192,7 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    # print(QtWidgets.QStyleFactory.keys())
     window = mainUI()
     window.show()
     sys.exit(app.exec_())
