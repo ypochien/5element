@@ -83,20 +83,20 @@ class mainUI(QMainWindow, Ui_MainWindow):
          {'AskPrice': [10481.0, 10482.0, 10483.0, 10484.0, 10485.0], 'AskVolSum': 321, 'AskVolume': [14, 38, 46, 86, 137], 'BidPrice': [10480.0, 10479.0, 10478.0, 10477.0, 10476.0], 'BidVolSum': 309, 'BidVolume': [27, 65, 71, 62, 84], 'Code': 'TXFH9', 'Date': '2019/08/19', 'DiffAskVol': [0, 0, 0, 0, 0], 'DiffAskVolSum': 0, 'DiffBidVol': [1, 0, 0, 0, 0], 'DiffBidVolSum': 1, 'FirstDerivedAskPrice': 10482.0, 'FirstDerivedAskVolume': 5, 'FirstDerivedBidPrice': 10479.0, 'FirstDerivedBidVolume': 9, 'TargetKindPrice': 10502.04, 'Time': '13:06:24.491000'}
         """
         tableWidget = self.trade.bidask_grid
-        for row, i in enumerate(msg["BidPrice"]):
-            item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 0, item)
         for row, i in enumerate(msg["BidVolume"]):
             item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setText(str(i))
+            tableWidget.setItem(row + 5, 0, item)
+        pricelst = list(reversed(msg["AskPrice"])) + msg["BidPrice"]
+        for row, i in enumerate(pricelst):
+            item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
             item.setText(str(i))
             tableWidget.setItem(row, 1, item)
-        for row, i in enumerate(msg["AskPrice"]):
+        for row, i in enumerate(reversed(msg["AskVolume"])):
             item = QTableWidgetItem()
-            item.setText(str(i))
-            tableWidget.setItem(row, 2, item)
-        for row, i in enumerate(msg["AskVolume"]):
-            item = QTableWidgetItem()
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
             item.setText(str(i))
             tableWidget.setItem(row, 3, item)
 
@@ -110,6 +110,21 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.trade.diff_price.display(msg["DiffPrice"][0])
         self.trade.tick_vol.display(msg["Volume"][0])
         self.trade.total_vol.display(msg["VolSum"][0])
+        item = QTableWidgetItem()
+        item.setTextAlignment(QtCore.Qt.AlignHCenter)
+        item.setText(str(msg["Volume"][0]))
+        itemClear = QTableWidgetItem()
+        itemClear.setText(" ")
+        tableWidget = self.trade.bidask_grid
+        ask = tableWidget.item(4, 1).text()
+        bid = tableWidget.item(5, 1).text()
+        # print(ask, bid, msg["Close"][0])
+        if str(msg["Close"][0]) == ask:
+            tableWidget.setItem(4, 2, item)
+            tableWidget.setItem(5, 2, itemClear)
+        if str(msg["Close"][0]) == bid:
+            tableWidget.setItem(4, 2, itemClear)
+            tableWidget.setItem(5, 2, item)
 
     def logo(self):
         pixmap = QtGui.QPixmap("img/shioaji.png")
@@ -149,12 +164,38 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4935"], quote_type="bidask")
 
 
+class BidAskDelegate(QtWidgets.QStyledItemDelegate):
+    def __init__(self, parent=None):
+        QtWidgets.QStyledItemDelegate.__init__(self, parent)
+        self.progressbaroption = QtWidgets.QStyleOptionProgressBar()
+
+    def paint(self, painter, option, index):
+        # if index.column() == 2 and index.row() == 0:
+        if index.data():
+            data = int(index.data())
+            self.progressbaroption.rect = option.rect.adjusted(2, 2, -2, -2)
+            self.progressbaroption.minimun = 0
+            self.progressbaroption.maximum = max(100, data)
+            self.progressbaroption.progress = data
+            self.progressbaroption.text = f"{data}"
+            self.progressbaroption.textVisible = True
+
+            QtWidgets.QApplication.style().drawControl(
+                QtWidgets.QStyle.CE_ProgressBar, self.progressbaroption, painter
+            )
+        else:
+            QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
+
+
 class trade_widget(QWidget, Ui_Form):
     def __init__(self):
         super(trade_widget, self).__init__()
         self.setupUi(self)
         self.login = None
         self.login_button.clicked.connect(self._login)
+        delegate = BidAskDelegate(self.bidask_grid)
+        self.bidask_grid.setItemDelegateForColumn(0, delegate)
+        self.bidask_grid.setItemDelegateForColumn(3, delegate)
 
     @Slot()
     def _login(self):
@@ -165,6 +206,7 @@ class trade_widget(QWidget, Ui_Form):
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     window = mainUI()
     window.show()
     sys.exit(app.exec_())

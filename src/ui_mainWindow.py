@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'ui/mainWindow.ui',
 # licensing of 'ui/mainWindow.ui' applies.
 #
-# Created: Sat Aug 17 12:28:56 2019
+# Created: Mon Aug 19 23:10:49 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(620, 374)
+        MainWindow.resize(622, 523)
         font = QtGui.QFont()
         font.setFamily("Apple LiGothic")
         MainWindow.setFont(font)
@@ -27,13 +27,15 @@ class Ui_MainWindow(object):
         self.centralwidget.setAutoFillBackground(True)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_2.setSpacing(1)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar()
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 620, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 622, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
