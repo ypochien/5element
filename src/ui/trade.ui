@@ -7,8 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>483</height>
+    <height>399</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>287</width>
+    <height>399</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>287</width>
+    <height>399</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -256,8 +268,14 @@ p, li { white-space: pre-wrap; }
      <x>10</x>
      <y>153</y>
      <width>270</width>
-     <height>326</height>
+     <height>241</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>270</width>
+     <height>241</height>
+    </size>
    </property>
    <property name="lineWidth">
     <number>1</number>
@@ -294,6 +312,9 @@ p, li { white-space: pre-wrap; }
    </attribute>
    <attribute name="verticalHeaderVisible">
     <bool>false</bool>
+   </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>21</number>
    </attribute>
    <row/>
    <row/>

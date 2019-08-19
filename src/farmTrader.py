@@ -5,6 +5,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QTableWidgetIt
 from PySide2.QtCore import QObject, Signal, Slot, QFile
 from ui_mainWindow import Ui_MainWindow
 from ui_trade import Ui_Form
+from ui_quotereport import Ui_QouteReport
 import shioaji as sj
 import asyncio
 
@@ -18,9 +19,13 @@ class mainUI(QMainWindow, Ui_MainWindow):
         super(mainUI, self).__init__(parent)
         self.setupUi(self)
         self.trade = trade_widget()
+        self.quote_report = quote_report_widget()
         self.trade.login = self.login
-        self.horizontalLayout.addWidget(self.trade)
-        self.horizontalLayout.addWidget(self.logo())
+        self.grid_layout.addWidget(self.trade, 0, 0)
+        # self.horizontalLayout.addWidget(self.trade)
+        self.grid_layout.addWidget(self.logo(), 0, 1)
+        self.grid_layout.addWidget(self.quote_report, 1, 0, 1, 2)
+
         self.setWindowIcon(QtGui.QIcon("img/shioaji.png"))
         # event
         self.rtUpdate = RTUpdate()
@@ -70,6 +75,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
          {'Amount': [10480.0], 'AmountSum': [804564419.0], 'AvgPrice': [10477.736352034171], 'Close': [10480.0], 'Code': 'TXFH9', 'Date': '2019/08/19', 'DiffPrice': [68.0], 'DiffRate': [0.6530925854782943], 'DiffType': [2], 'High': [10489.0], 'Low': [10419.0], 'Open': 10436.0, 'TargetKindPrice': 10502.04, 'TickType': [2], 'Time': '13:06:24.513000', 'TradeAskVolSum': 42629, 'TradeBidVolSum': 40982, 'VolSum': [76788], 'Volume': [1]}
         """
         self.trade.update_quote(code, msg)
+        self.quote_report.update_quote(code, msg)
 
     def logo(self):
         pixmap = QtGui.QPixmap("img/shioaji.png")
@@ -99,6 +105,11 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(
             self.api.Contracts.Futures["TXFH9"], quote_type="bidask"
         )
+        self.api.quote.subscribe(self.api.Contracts.Futures["MXFH9"])
+        self.api.quote.subscribe(
+            self.api.Contracts.Futures["MXFH9"], quote_type="bidask"
+        )
+
         self.api.quote.subscribe(self.api.Contracts.Stocks["2330"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["2330"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["2383"])
@@ -107,6 +118,39 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4947"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["4935"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["4935"], quote_type="bidask")
+
+
+class quote_report_widget(QWidget, Ui_QouteReport):
+    def __init__(self):
+        super(quote_report_widget, self).__init__()
+        self.setupUi(self)
+        self.raw = dict()
+        self.load_data()
+
+    def load_data(self):
+        model = QtGui.QStandardItemModel()
+        header = ["商品", "成交價", "單量", "成交量", "時間"]
+        for i, v in enumerate(header):
+            item = QtGui.QStandardItem(v)
+            model.setHorizontalHeaderItem(i, item)
+
+        rown = 0
+        for k, v in self.raw.items():
+            for coln, i in enumerate(v):
+                item = QtGui.QStandardItem(i)
+                model.setItem(rown, coln, item)
+            rown += 1
+        self.quotereport.setModel(model)
+
+    def update_quote(self, code, msg):
+        self.raw[code] = [
+            code,
+            str(msg["Close"][0]),
+            str(msg["Volume"][0]),
+            str(msg["VolSum"][0]),
+            msg["Time"],
+        ]
+        self.load_data()
 
 
 class BidAskDelegate(QtWidgets.QStyledItemDelegate):

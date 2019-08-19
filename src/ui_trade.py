@@ -7,7 +7,7 @@
 # Form implementation generated from reading ui file 'ui/trade.ui',
 # licensing of 'ui/trade.ui' applies.
 #
-# Created: Mon Aug 19 23:25:37 2019
+# Created: Tue Aug 20 00:45:50 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,9 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(287, 483)
+        Form.resize(287, 399)
+        Form.setMinimumSize(QtCore.QSize(287, 399))
+        Form.setMaximumSize(QtCore.QSize(287, 399))
         font = QtGui.QFont()
         font.setFamily("Lantinghei TC")
         font.setPointSize(14)
@@ -94,7 +96,8 @@ class Ui_Form(object):
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         self.password_edit.setObjectName("password_edit")
         self.bidask_grid = QtWidgets.QTableWidget(Form)
-        self.bidask_grid.setGeometry(QtCore.QRect(10, 153, 270, 326))
+        self.bidask_grid.setGeometry(QtCore.QRect(10, 153, 270, 241))
+        self.bidask_grid.setMinimumSize(QtCore.QSize(270, 241))
         self.bidask_grid.setLineWidth(1)
         self.bidask_grid.setShowGrid(True)
         self.bidask_grid.setGridStyle(QtCore.Qt.CustomDashLine)
@@ -124,6 +127,7 @@ class Ui_Form(object):
         self.bidask_grid.horizontalHeader().setHighlightSections(True)
         self.bidask_grid.horizontalHeader().setStretchLastSection(True)
         self.bidask_grid.verticalHeader().setVisible(False)
+        self.bidask_grid.verticalHeader().setDefaultSectionSize(21)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>580</width>
-    <height>510</height>
+    <height>665</height>
    </rect>
   </property>
   <property name="font">
@@ -31,10 +31,7 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <property name="spacing">
-     <number>1</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -47,8 +44,8 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout"/>
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="grid_layout"/>
     </item>
    </layout>
   </widget>
