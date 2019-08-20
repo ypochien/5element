@@ -49,11 +49,10 @@ class mainUI(QMainWindow, Ui_MainWindow):
          MKT/idcdmzpcr01/TSE/2330
          {'Close': [252.5], 'Time': '13:06:24.674650', 'VolSum': [17280], 'Volume': [1]}
         """
-        self.trade.code_edit.setText(code)
-        self.trade.curr_price.display(msg["Close"][0])
-        self.trade.diff_price.display(0)
-        self.trade.tick_vol.display(msg["Volume"][0])
-        self.trade.total_vol.display(msg["VolSum"][0])
+        msg["Code"] = f"{code} {self.api.Contracts.Stocks[code]['name']}"
+        msg["DiffPrice"] = [0]
+        self.trade.update_quote(code, msg)
+        self.quote_report.update_quote(code, msg)
 
     def proc_qut(self, code, msg):
         """
@@ -74,6 +73,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         L/TFE/TXFH9
          {'Amount': [10480.0], 'AmountSum': [804564419.0], 'AvgPrice': [10477.736352034171], 'Close': [10480.0], 'Code': 'TXFH9', 'Date': '2019/08/19', 'DiffPrice': [68.0], 'DiffRate': [0.6530925854782943], 'DiffType': [2], 'High': [10489.0], 'Low': [10419.0], 'Open': 10436.0, 'TargetKindPrice': 10502.04, 'TickType': [2], 'Time': '13:06:24.513000', 'TradeAskVolSum': 42629, 'TradeBidVolSum': 40982, 'VolSum': [76788], 'Volume': [1]}
         """
+        msg["Code"] = f"{code} {self.api.Contracts.Futures[code]['name']}"
         self.trade.update_quote(code, msg)
         self.quote_report.update_quote(code, msg)
 
@@ -118,6 +118,10 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4947"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["4935"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["4935"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
 
 
 class quote_report_widget(QWidget, Ui_QouteReport):
@@ -144,7 +148,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
 
     def update_quote(self, code, msg):
         self.raw[code] = [
-            code,
+            msg["Code"],
             str(msg["Close"][0]),
             str(msg["Volume"][0]),
             str(msg["VolSum"][0]),
@@ -236,7 +240,7 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    # print(QtWidgets.QStyleFactory.keys())
+    print(QtWidgets.QStyleFactory.keys())
     window = mainUI()
     window.show()
     sys.exit(app.exec_())
