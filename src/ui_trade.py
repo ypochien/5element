@@ -7,7 +7,7 @@
 # Form implementation generated from reading ui file 'ui/trade.ui',
 # licensing of 'ui/trade.ui' applies.
 #
-# Created: Tue Aug 20 00:45:50 2019
+# Created: Wed Aug 21 09:58:52 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -67,12 +67,6 @@ class Ui_Form(object):
         self.bid_button = QtWidgets.QPushButton(Form)
         self.bid_button.setGeometry(QtCore.QRect(20, 120, 111, 30))
         self.bid_button.setObjectName("bid_button")
-        self.code_edit = QtWidgets.QTextEdit(Form)
-        self.code_edit.setGeometry(QtCore.QRect(10, 54, 260, 30))
-        self.code_edit.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        self.code_edit.setInputMethodHints(QtCore.Qt.ImhUppercaseOnly)
-        self.code_edit.setAcceptRichText(False)
-        self.code_edit.setObjectName("code_edit")
         self.total_vol = QtWidgets.QLCDNumber(Form)
         self.total_vol.setGeometry(QtCore.QRect(190, 87, 80, 30))
         font = QtGui.QFont()
@@ -127,7 +121,10 @@ class Ui_Form(object):
         self.bidask_grid.horizontalHeader().setHighlightSections(True)
         self.bidask_grid.horizontalHeader().setStretchLastSection(True)
         self.bidask_grid.verticalHeader().setVisible(False)
-        self.bidask_grid.verticalHeader().setDefaultSectionSize(21)
+        self.bidask_grid.verticalHeader().setDefaultSectionSize(23)
+        self.code_edit = QtWidgets.QLineEdit(Form)
+        self.code_edit.setGeometry(QtCore.QRect(20, 53, 242, 30))
+        self.code_edit.setObjectName("code_edit")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -137,12 +134,6 @@ class Ui_Form(object):
         self.ask_button.setText(QtWidgets.QApplication.translate("Form", "賣出", None, -1))
         self.login_button.setText(QtWidgets.QApplication.translate("Form", "Login", None, -1))
         self.bid_button.setText(QtWidgets.QApplication.translate("Form", "買進", None, -1))
-        self.code_edit.setHtml(QtWidgets.QApplication.translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Lantinghei TC\'; font-size:14pt; font-weight:600; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None, -1))
-        self.code_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "商品代號", None, -1))
         self.id_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "ID", None, -1))
         self.password_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "Password", None, -1))
         self.bidask_grid.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Form", "委買", None, -1))
@@ -152,4 +143,5 @@ class Ui_Form(object):
         __sortingEnabled = self.bidask_grid.isSortingEnabled()
         self.bidask_grid.setSortingEnabled(False)
         self.bidask_grid.setSortingEnabled(__sortingEnabled)
+        self.code_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "商品代碼", None, -1))
 
