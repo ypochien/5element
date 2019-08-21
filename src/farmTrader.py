@@ -106,6 +106,10 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.trade.code_edit.setText("目前暫停服務")
             self.trade.code_edit.repaint()
             return
+        self.api.activate_ca(
+            f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
+        )
+
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
         self.api.quote.set_callback(self.quote_msg)
@@ -118,6 +122,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.api.Contracts.Futures["MXFH9"], quote_type="bidask"
         )
 
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["2330"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["2330"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["2383"])
@@ -224,7 +230,7 @@ class trade_widget(QWidget, Ui_Form):
 
     def place_order(self, bidask):
         print(self.bidprice, self.askprice)
-        selectedCode = self.selectedCode            
+        selectedCode = self.selectedCode
         api = self.parent.api
         contract = (
             api.Contracts.Stocks[selectedCode]
@@ -237,12 +243,12 @@ class trade_widget(QWidget, Ui_Form):
             sample_order = api.Order(
                 price=price,
                 quantity=1,
-                action=ACTION_SELL,
+                action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                 price_type=STOCK_PRICE_TYPE_LIMITPRICE,
                 order_type=STOCK_ORDER_TYPE_COMMON,
             )
 
-            # api.place_order(contract, sample_order)
+            api.place_order(contract, sample_order)
 
     def update_bidask(self, topic, msg):
         if msg["Code"] != self.selectedCode:
