@@ -37,9 +37,9 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>119</y>
+     <y>113</y>
      <width>111</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="text">
@@ -50,9 +50,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>87</y>
+     <y>85</y>
      <width>80</width>
-     <height>30</height>
+     <height>28</height>
     </rect>
    </property>
    <property name="font">
@@ -81,9 +81,9 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>87</y>
+     <y>85</y>
      <width>50</width>
-     <height>30</height>
+     <height>28</height>
     </rect>
    </property>
    <property name="font">
@@ -124,9 +124,9 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>87</y>
+     <y>85</y>
      <width>40</width>
-     <height>30</height>
+     <height>27</height>
     </rect>
    </property>
    <property name="font">
@@ -152,9 +152,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>120</y>
+     <y>113</y>
      <width>111</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="text">
@@ -165,9 +165,9 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>87</y>
+     <y>85</y>
      <width>80</width>
-     <height>30</height>
+     <height>27</height>
     </rect>
    </property>
    <property name="font">
@@ -237,9 +237,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>153</y>
+     <y>140</y>
      <width>270</width>
-     <height>241</height>
+     <height>256</height>
     </rect>
    </property>
    <property name="minimumSize">
@@ -250,6 +250,15 @@
    </property>
    <property name="lineWidth">
     <number>1</number>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="tabKeyNavigation">
+    <bool>false</bool>
+   </property>
+   <property name="textElideMode">
+    <enum>Qt::ElideNone</enum>
    </property>
    <property name="showGrid">
     <bool>true</bool>

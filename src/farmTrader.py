@@ -14,7 +14,6 @@ import asyncio
 class RTUpdate(QObject):
     caller = Signal((str, dict))
 
-
 class mainUI(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(mainUI, self).__init__(parent)
@@ -50,7 +49,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
          MKT/idcdmzpcr01/TSE/2330
          {'Close': [252.5], 'Time': '13:06:24.674650', 'VolSum': [17280], 'Volume': [1]}
         """
-        msg["Code"] = f"{code}"
+        
+        msg["Code"] = code
         msg["CodeName"] = f"{code} {self.api.Contracts.Stocks[code]['name']}"
         msg["DiffPrice"] = [0]
         self.trade.update_quote(code, msg)
@@ -93,7 +93,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
         return lbl
 
     def quote_msg(self, topic, msg):
-        self.rtUpdate.caller.emit(topic, msg)
+        #self.rtUpdate.caller.emit(topic, msg)
+        self.rt_worker(topic,msg)
 
     def login(self):
         user = {
@@ -106,6 +107,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.trade.code_edit.setText("目前暫停服務")
             self.trade.code_edit.repaint()
             return
+        
         self.api.activate_ca(
             f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
         )
@@ -113,13 +115,13 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
         self.api.quote.set_callback(self.quote_msg)
-        self.api.quote.subscribe(self.api.Contracts.Futures["TXFH9"])
+        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])   
         self.api.quote.subscribe(
-            self.api.Contracts.Futures["TXFH9"], quote_type="bidask"
+            self.api.Contracts.Futures["TXFI9"], quote_type="bidask"
         )
-        self.api.quote.subscribe(self.api.Contracts.Futures["MXFH9"])
+        self.api.quote.subscribe(self.api.Contracts.Futures["MXFI9"])
         self.api.quote.subscribe(
-            self.api.Contracts.Futures["MXFH9"], quote_type="bidask"
+            self.api.Contracts.Futures["MXFI9"], quote_type="bidask"
         )
 
         self.api.quote.subscribe(self.api.Contracts.Stocks["4968"])
@@ -136,7 +138,6 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4142"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
-
 
 class quote_report_widget(QWidget, Ui_QouteReport):
     def __init__(self, parent):
@@ -182,30 +183,6 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         ]
         self.load_data()
 
-
-class BidAskDelegate(QtWidgets.QStyledItemDelegate):
-    def __init__(self, parent=None):
-        QtWidgets.QStyledItemDelegate.__init__(self, parent)
-        self.progressbaroption = QtWidgets.QStyleOptionProgressBar()
-
-    def paint(self, painter, option, index):
-        # if index.column() == 2 and index.row() == 0:
-        if index.data():
-            data = int(index.data())
-            self.progressbaroption.rect = option.rect.adjusted(2, 2, -2, -2)
-            self.progressbaroption.minimun = 0
-            self.progressbaroption.maximum = max(100, data)
-            self.progressbaroption.progress = data
-            self.progressbaroption.text = f"{data}"
-            self.progressbaroption.textVisible = True
-
-            QtWidgets.QApplication.style().drawControl(
-                QtWidgets.QStyle.CE_ProgressBar, self.progressbaroption, painter
-            )
-        else:
-            QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
-
-
 class trade_widget(QWidget, Ui_Form):
     def __init__(self, parent):
         super(trade_widget, self).__init__()
@@ -221,14 +198,22 @@ class trade_widget(QWidget, Ui_Form):
         self.bidask_grid.setItemDelegateForColumn(3, delegate)
         self.bid_button.clicked.connect(self.bid_placeorder)
         self.ask_button.clicked.connect(self.ask_placeorder)
+        self.bidask_grid.cellClicked.connect(self.hander_click)
 
-    def bid_placeorder(self):
-        self.place_order("bid")
+    def hander_click(self,row,col):
+        price = self.bidask_grid.item(row,1).text()
+        if price and col == 0:
+            self.bid_placeorder(price=price)
+        if price and col == 3:
+            self.ask_placeorder(price=price)
 
-    def ask_placeorder(self):
-        self.place_order("ask")
+    def bid_placeorder(self,price=None):
+        self.place_order("bid",price)
 
-    def place_order(self, bidask):
+    def ask_placeorder(self,price=None):
+        self.place_order("ask",price)
+
+    def place_order(self, bidask,price = None):
         print(self.bidprice, self.askprice)
         selectedCode = self.selectedCode
         api = self.parent.api
@@ -238,15 +223,26 @@ class trade_widget(QWidget, Ui_Form):
             else api.Contracts.Futures[selectedCode]
         )
         if contract:
-            price = self.bidprice if bidask == "ask" else self.askprice
+            if price == None:
+                price = self.bidprice if bidask == "ask" else self.askprice
+
             print(bidask, contract, price)
-            sample_order = api.Order(
-                price=price,
-                quantity=1,
-                action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                price_type=STOCK_PRICE_TYPE_LIMITPRICE,
-                order_type=STOCK_ORDER_TYPE_COMMON,
-            )
+            if isinstance(contract, sj.contracts.Stock):
+                sample_order = api.Order(
+                    price=price,
+                    quantity=1,
+                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                    price_type=STOCK_PRICE_TYPE_LIMITPRICE,
+                    order_type=STOCK_ORDER_TYPE_COMMON,
+                )
+            else:
+                sample_order = api.Order(
+                    price=price,
+                    quantity=1,
+                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                    price_type=FUTURES_PRICE_TYPE_LMT,
+                    order_type=FUTURES_ORDER_TYPE_ROD,
+                )
 
             api.place_order(contract, sample_order)
 
@@ -302,6 +298,27 @@ class trade_widget(QWidget, Ui_Form):
         if self.login:
             self.login()
 
+class BidAskDelegate(QtWidgets.QStyledItemDelegate):
+    def __init__(self, parent=None):
+        QtWidgets.QStyledItemDelegate.__init__(self, parent)
+        self.progressbaroption = QtWidgets.QStyleOptionProgressBar()
+
+    def paint(self, painter, option, index):
+        # if index.column() == 2 and index.row() == 0:
+        if index.data():
+            data = int(index.data())
+            self.progressbaroption.rect = option.rect.adjusted(2, 2, -2, -2)
+            self.progressbaroption.minimun = 0
+            self.progressbaroption.maximum = max(100, data)
+            self.progressbaroption.progress = data
+            self.progressbaroption.text = f"{data}"
+            self.progressbaroption.textVisible = True
+
+            QtWidgets.QApplication.style().drawControl(
+                QtWidgets.QStyle.CE_ProgressBar, self.progressbaroption, painter
+            )
+        else:
+            QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

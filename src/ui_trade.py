@@ -7,7 +7,7 @@
 # Form implementation generated from reading ui file 'ui/trade.ui',
 # licensing of 'ui/trade.ui' applies.
 #
-# Created: Wed Aug 21 09:58:52 2019
+# Created: Thu Aug 22 00:40:09 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,10 +27,10 @@ class Ui_Form(object):
         font.setBold(True)
         Form.setFont(font)
         self.ask_button = QtWidgets.QPushButton(Form)
-        self.ask_button.setGeometry(QtCore.QRect(140, 119, 111, 30))
+        self.ask_button.setGeometry(QtCore.QRect(140, 113, 111, 26))
         self.ask_button.setObjectName("ask_button")
         self.curr_price = QtWidgets.QLCDNumber(Form)
-        self.curr_price.setGeometry(QtCore.QRect(10, 87, 80, 30))
+        self.curr_price.setGeometry(QtCore.QRect(10, 85, 80, 28))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.curr_price.setFont(font)
@@ -41,7 +41,7 @@ class Ui_Form(object):
         self.curr_price.setProperty("intValue", 0)
         self.curr_price.setObjectName("curr_price")
         self.diff_price = QtWidgets.QLCDNumber(Form)
-        self.diff_price.setGeometry(QtCore.QRect(90, 87, 50, 30))
+        self.diff_price.setGeometry(QtCore.QRect(90, 85, 50, 28))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.diff_price.setFont(font)
@@ -55,7 +55,7 @@ class Ui_Form(object):
         self.login_button.setFlat(False)
         self.login_button.setObjectName("login_button")
         self.tick_vol = QtWidgets.QLCDNumber(Form)
-        self.tick_vol.setGeometry(QtCore.QRect(150, 87, 40, 30))
+        self.tick_vol.setGeometry(QtCore.QRect(150, 85, 40, 27))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.tick_vol.setFont(font)
@@ -65,10 +65,10 @@ class Ui_Form(object):
         self.tick_vol.setProperty("intValue", 0)
         self.tick_vol.setObjectName("tick_vol")
         self.bid_button = QtWidgets.QPushButton(Form)
-        self.bid_button.setGeometry(QtCore.QRect(20, 120, 111, 30))
+        self.bid_button.setGeometry(QtCore.QRect(20, 113, 111, 26))
         self.bid_button.setObjectName("bid_button")
         self.total_vol = QtWidgets.QLCDNumber(Form)
-        self.total_vol.setGeometry(QtCore.QRect(190, 87, 80, 30))
+        self.total_vol.setGeometry(QtCore.QRect(190, 85, 80, 27))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.total_vol.setFont(font)
@@ -90,9 +90,12 @@ class Ui_Form(object):
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         self.password_edit.setObjectName("password_edit")
         self.bidask_grid = QtWidgets.QTableWidget(Form)
-        self.bidask_grid.setGeometry(QtCore.QRect(10, 153, 270, 241))
+        self.bidask_grid.setGeometry(QtCore.QRect(10, 140, 270, 256))
         self.bidask_grid.setMinimumSize(QtCore.QSize(270, 241))
         self.bidask_grid.setLineWidth(1)
+        self.bidask_grid.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.bidask_grid.setTabKeyNavigation(False)
+        self.bidask_grid.setTextElideMode(QtCore.Qt.ElideNone)
         self.bidask_grid.setShowGrid(True)
         self.bidask_grid.setGridStyle(QtCore.Qt.CustomDashLine)
         self.bidask_grid.setWordWrap(False)
