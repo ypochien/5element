@@ -23,10 +23,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.quote_report = quote_report_widget(self)
         self.trade.login = self.login
         self.grid_layout.addWidget(self.trade, 0, 0)
-        # self.horizontalLayout.addWidget(self.trade)
         self.grid_layout.addWidget(self.logo(), 0, 1)
         self.grid_layout.addWidget(self.quote_report, 1, 0, 1, 2)
-
         self.setWindowIcon(QtGui.QIcon("img/shioaji.png"))
         # event
         self.rtUpdate = RTUpdate()
@@ -139,6 +137,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4142"], quote_type="bidask")
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"], quote_type="bidask")
 
 
 class quote_report_widget(QWidget, Ui_QouteReport):
@@ -163,7 +163,13 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             row = ranged[0].row()
             code = self.model.item(row, 0).text()
             self.parent.trade.selectedCode = code
-            # print(self.model.item(row, 0).text())
+            contract = (
+                self.parent.api.Contracts.Stocks[code]
+                if self.parent.api.Contracts.Stocks[code]
+                else self.parent.api.Contracts.Futures[code]
+            )
+            codename = f"{code} {contract['name']}"
+            self.parent.trade.code_edit.setText(codename)
 
     def load_data(self):
         model = self.model
@@ -205,6 +211,13 @@ class trade_widget(QWidget, Ui_Form):
         self.bid_button.clicked.connect(self.bid_placeorder)
         self.ask_button.clicked.connect(self.ask_placeorder)
         self.bidask_grid.cellClicked.connect(self.hander_click)
+        self.code_edit.returnPressed.connect(self.sub_new_code)
+
+    def sub_new_code(self):
+        code = self.code_edit.text()
+        api = self.parent.api
+        api.quote.subscribe(api.Contracts.Stocks[code])
+        api.quote.subscribe(api.Contracts.Stocks[code], quote_type="bidask")
 
     def hander_click(self, row, col):
         price = self.bidask_grid.item(row, 1).text()
@@ -279,7 +292,6 @@ class trade_widget(QWidget, Ui_Form):
     def update_quote(self, topic, msg):
         if msg["Code"] != self.selectedCode:
             return
-        self.code_edit.setText(msg["CodeName"])
         self.curr_price.display(msg["Close"][0])
         self.diff_price.display(msg["DiffPrice"][0])
         self.tick_vol.display(msg["Volume"][0])
