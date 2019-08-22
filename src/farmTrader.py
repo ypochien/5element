@@ -13,6 +13,7 @@ import asyncio
 
 class RTUpdate(QObject):
     caller = Signal((str, dict))
+    placeorder = Signal((sj.contracts.Contract, sj.order.Order))
 
 
 class mainUI(QMainWindow, Ui_MainWindow):
@@ -29,7 +30,12 @@ class mainUI(QMainWindow, Ui_MainWindow):
         # event
         self.rtUpdate = RTUpdate()
         self.rtUpdate.caller.connect(self.rt_worker)
+        self.rtUpdate.placeorder.connect(self.placeorder_worker)
         self.api = sj.Shioaji()
+
+    @Slot(sj.contracts.Contract, sj.order.Order)
+    def placeorder_worker(self, contract, order):
+        print(self.api.place_order(contract, order))
 
     @Slot(str, dict)
     def rt_worker(self, topic, msg):
@@ -242,28 +248,47 @@ class trade_widget(QWidget, Ui_Form):
             else api.Contracts.Futures[selectedCode]
         )
         if contract:
-            if price == None:
-                price = self.bidprice if bidask == "ask" else self.askprice
+            # if price == None:
+            # price = self.bidprice if bidask == "ask" else self.askprice
 
             print(bidask, contract, price)
-            if isinstance(contract, sj.contracts.Stock):
-                sample_order = api.Order(
-                    price=price,
-                    quantity=1,
-                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                    price_type=STOCK_PRICE_TYPE_LIMITPRICE,
-                    order_type=STOCK_ORDER_TYPE_COMMON,
-                )
-            else:
-                sample_order = api.Order(
-                    price=price,
-                    quantity=1,
-                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                    price_type=FUTURES_PRICE_TYPE_LMT,
-                    order_type=FUTURES_ORDER_TYPE_ROD,
-                )
+            if contract.security_type == "STK":
+                if price:
+                    sample_order = api.Order(
+                        price=price,
+                        quantity=1,
+                        action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                        price_type=STOCK_PRICE_TYPE_LIMITPRICE,
+                        order_type=STOCK_ORDER_TYPE_COMMON,
+                    )
+                else:
+                    sample_order = api.Order(
+                        price="",
+                        quantity=1,
+                        action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                        price_type=STOCK_PRICE_TYPE_LIMITDOWN
+                        if bidask == "ask"
+                        else STOCK_PRICE_TYPE_LIMITUP,
+                        order_type=STOCK_ORDER_TYPE_COMMON,
+                    )
 
-            api.place_order(contract, sample_order)
+            elif contract.security_type == "FUT":
+                sample_order = api.Order(
+                    price=price if price else 0,
+                    quantity=1,
+                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                    price_type=FUTURES_PRICE_TYPE_LMT
+                    if price
+                    else FUTURES_PRICE_TYPE_MKP,
+                    order_type=FUTURES_ORDER_TYPE_ROD
+                    if price
+                    else FUTURES_ORDER_TYPE_IOC,
+                )
+            elif contract.security_type == "OPT":
+                pass
+
+            self.parent.rtUpdate.placeorder.emit(contract, sample_order)
+            # print(api.place_order(contract, sample_order))
 
     def update_bidask(self, topic, msg):
         if msg["Code"] != self.selectedCode:
