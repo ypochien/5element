@@ -14,6 +14,7 @@ import asyncio
 class RTUpdate(QObject):
     caller = Signal((str, dict))
 
+
 class mainUI(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(mainUI, self).__init__(parent)
@@ -49,7 +50,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
          MKT/idcdmzpcr01/TSE/2330
          {'Close': [252.5], 'Time': '13:06:24.674650', 'VolSum': [17280], 'Volume': [1]}
         """
-        
+
         msg["Code"] = code
         msg["CodeName"] = f"{code} {self.api.Contracts.Stocks[code]['name']}"
         msg["DiffPrice"] = [0]
@@ -93,8 +94,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
         return lbl
 
     def quote_msg(self, topic, msg):
-        #self.rtUpdate.caller.emit(topic, msg)
-        self.rt_worker(topic,msg)
+        self.rtUpdate.caller.emit(topic, msg)
+        # self.rt_worker(topic, msg)
 
     def login(self):
         user = {
@@ -107,7 +108,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.trade.code_edit.setText("目前暫停服務")
             self.trade.code_edit.repaint()
             return
-        
+
         self.api.activate_ca(
             f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
         )
@@ -115,7 +116,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
         self.api.quote.set_callback(self.quote_msg)
-        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])   
+        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])
         self.api.quote.subscribe(
             self.api.Contracts.Futures["TXFI9"], quote_type="bidask"
         )
@@ -139,6 +140,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
         self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
 
+
 class quote_report_widget(QWidget, Ui_QouteReport):
     def __init__(self, parent):
         super(quote_report_widget, self).__init__()
@@ -147,6 +149,10 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         self.raw = dict()
         self.model = QtGui.QStandardItemModel()
         self.quotereport.setModel(self.model)
+        header = ["商品", "成交價", "單量", "成交量", "時間"]
+        for i, v in enumerate(header):
+            item = QtGui.QStandardItem(v)
+            self.model.setHorizontalHeaderItem(i, item)
         self.load_data()
         model = self.quotereport.selectionModel()
         model.selectionChanged.connect(self.handleSelectionChanged)
@@ -161,16 +167,15 @@ class quote_report_widget(QWidget, Ui_QouteReport):
 
     def load_data(self):
         model = self.model
-        header = ["商品", "成交價", "單量", "成交量", "時間"]
-        for i, v in enumerate(header):
-            item = QtGui.QStandardItem(v)
-            model.setHorizontalHeaderItem(i, item)
-
         rown = 0
         for k, v in self.raw.items():
             for coln, i in enumerate(v):
                 item = QtGui.QStandardItem(i)
-                model.setItem(rown, coln, item)
+                try:
+                    model.setItem(rown, coln, item)
+                except expression as identifier:
+                    print(identifier)
+
             rown += 1
 
     def update_quote(self, code, msg):
@@ -182,6 +187,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             msg["Time"],
         ]
         self.load_data()
+
 
 class trade_widget(QWidget, Ui_Form):
     def __init__(self, parent):
@@ -200,20 +206,20 @@ class trade_widget(QWidget, Ui_Form):
         self.ask_button.clicked.connect(self.ask_placeorder)
         self.bidask_grid.cellClicked.connect(self.hander_click)
 
-    def hander_click(self,row,col):
-        price = self.bidask_grid.item(row,1).text()
+    def hander_click(self, row, col):
+        price = self.bidask_grid.item(row, 1).text()
         if price and col == 0:
             self.bid_placeorder(price=price)
         if price and col == 3:
             self.ask_placeorder(price=price)
 
-    def bid_placeorder(self,price=None):
-        self.place_order("bid",price)
+    def bid_placeorder(self, price=None):
+        self.place_order("bid", price)
 
-    def ask_placeorder(self,price=None):
-        self.place_order("ask",price)
+    def ask_placeorder(self, price=None):
+        self.place_order("ask", price)
 
-    def place_order(self, bidask,price = None):
+    def place_order(self, bidask, price=None):
         print(self.bidprice, self.askprice)
         selectedCode = self.selectedCode
         api = self.parent.api
@@ -298,6 +304,7 @@ class trade_widget(QWidget, Ui_Form):
         if self.login:
             self.login()
 
+
 class BidAskDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent=None):
         QtWidgets.QStyledItemDelegate.__init__(self, parent)
@@ -319,6 +326,7 @@ class BidAskDelegate(QtWidgets.QStyledItemDelegate):
             )
         else:
             QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
+
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
