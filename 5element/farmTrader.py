@@ -13,6 +13,8 @@ import asyncio
 
 class RTUpdate(QObject):
     caller = Signal((str, dict))
+    placeorder = Signal((sj.contracts.Contract, sj.order.Order))
+
 
 
 class mainUI(QMainWindow, Ui_MainWindow):
@@ -23,15 +25,18 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.quote_report = quote_report_widget(self)
         self.trade.login = self.login
         self.grid_layout.addWidget(self.trade, 0, 0)
-        # self.horizontalLayout.addWidget(self.trade)
         self.grid_layout.addWidget(self.logo(), 0, 1)
         self.grid_layout.addWidget(self.quote_report, 1, 0, 1, 2)
-
         self.setWindowIcon(QtGui.QIcon("img/shioaji.png"))
         # event
         self.rtUpdate = RTUpdate()
         self.rtUpdate.caller.connect(self.rt_worker)
+        self.rtUpdate.placeorder.connect(self.placeorder_worker)
         self.api = sj.Shioaji()
+
+    @Slot(sj.contracts.Contract, sj.order.Order)
+    def placeorder_worker(self, contract, order):
+        print(self.api.place_order(contract, order))
 
     @Slot(str, dict)
     def rt_worker(self, topic, msg):
@@ -50,7 +55,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
          MKT/idcdmzpcr01/TSE/2330
          {'Close': [252.5], 'Time': '13:06:24.674650', 'VolSum': [17280], 'Volume': [1]}
         """
-        
+
         msg["Code"] = code
         msg["CodeName"] = f"{code} {self.api.Contracts.Stocks[code]['name']}"
         msg["DiffPrice"] = [0]
@@ -94,8 +99,8 @@ class mainUI(QMainWindow, Ui_MainWindow):
         return lbl
 
     def quote_msg(self, topic, msg):
-        #self.rtUpdate.caller.emit(topic, msg)
-        self.rt_worker(topic,msg)
+        self.rtUpdate.caller.emit(topic, msg)
+        # self.rt_worker(topic, msg)
 
     def login(self):
         user = {
@@ -108,7 +113,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.trade.code_edit.setText("目前暫停服務")
             self.trade.code_edit.repaint()
             return
-        
+
         self.api.activate_ca(
             f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
         )
@@ -116,7 +121,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
         self.api.quote.set_callback(self.quote_msg)
-        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])   
+        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])
         self.api.quote.subscribe(
             self.api.Contracts.Futures["TXFI9"], quote_type="bidask"
         )
@@ -125,6 +130,26 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.api.Contracts.Futures["MXFI9"], quote_type="bidask"
         )
 
+<<<<<<< HEAD:5element/farmTrader.py
+=======
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["2330"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["2330"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["2383"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["2383"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4947"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4947"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4935"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4935"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
+        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"])
+        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"], quote_type="bidask")
+
+>>>>>>> a7ef9caebfcaafb1c1520b8edbba0d9c1aa04f7a:src/farmTrader.py
 
 class quote_report_widget(QWidget, Ui_QouteReport):
     def __init__(self, parent):
@@ -134,6 +159,10 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         self.raw = dict()
         self.model = QtGui.QStandardItemModel()
         self.quotereport.setModel(self.model)
+        header = ["商品", "成交價", "單量", "成交量", "時間"]
+        for i, v in enumerate(header):
+            item = QtGui.QStandardItem(v)
+            self.model.setHorizontalHeaderItem(i, item)
         self.load_data()
         model = self.quotereport.selectionModel()
         model.selectionChanged.connect(self.handleSelectionChanged)
@@ -144,20 +173,25 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             row = ranged[0].row()
             code = self.model.item(row, 0).text()
             self.parent.trade.selectedCode = code
-            # print(self.model.item(row, 0).text())
+            contract = (
+                self.parent.api.Contracts.Stocks[code]
+                if self.parent.api.Contracts.Stocks[code]
+                else self.parent.api.Contracts.Futures[code]
+            )
+            codename = f"{code} {contract['name']}"
+            self.parent.trade.code_edit.setText(codename)
 
     def load_data(self):
         model = self.model
-        header = ["商品", "成交價", "單量", "成交量", "時間"]
-        for i, v in enumerate(header):
-            item = QtGui.QStandardItem(v)
-            model.setHorizontalHeaderItem(i, item)
-
         rown = 0
         for k, v in self.raw.items():
             for coln, i in enumerate(v):
                 item = QtGui.QStandardItem(i)
-                model.setItem(rown, coln, item)
+                try:
+                    model.setItem(rown, coln, item)
+                except expression as identifier:
+                    print(identifier)
+
             rown += 1
 
     def update_quote(self, code, msg):
@@ -169,6 +203,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             msg["Time"],
         ]
         self.load_data()
+
 
 class trade_widget(QWidget, Ui_Form):
     def __init__(self, parent):
@@ -186,21 +221,28 @@ class trade_widget(QWidget, Ui_Form):
         self.bid_button.clicked.connect(self.bid_placeorder)
         self.ask_button.clicked.connect(self.ask_placeorder)
         self.bidask_grid.cellClicked.connect(self.hander_click)
+        self.code_edit.returnPressed.connect(self.sub_new_code)
 
-    def hander_click(self,row,col):
-        price = self.bidask_grid.item(row,1).text()
+    def sub_new_code(self):
+        code = self.code_edit.text()
+        api = self.parent.api
+        api.quote.subscribe(api.Contracts.Stocks[code])
+        api.quote.subscribe(api.Contracts.Stocks[code], quote_type="bidask")
+
+    def hander_click(self, row, col):
+        price = self.bidask_grid.item(row, 1).text()
         if price and col == 0:
             self.bid_placeorder(price=price)
         if price and col == 3:
             self.ask_placeorder(price=price)
 
-    def bid_placeorder(self,price=None):
-        self.place_order("bid",price)
+    def bid_placeorder(self, price=None):
+        self.place_order("bid", price)
 
-    def ask_placeorder(self,price=None):
-        self.place_order("ask",price)
+    def ask_placeorder(self, price=None):
+        self.place_order("ask", price)
 
-    def place_order(self, bidask,price = None):
+    def place_order(self, bidask, price=None):
         print(self.bidprice, self.askprice)
         selectedCode = self.selectedCode
         api = self.parent.api
@@ -210,28 +252,47 @@ class trade_widget(QWidget, Ui_Form):
             else api.Contracts.Futures[selectedCode]
         )
         if contract:
-            if price == None:
-                price = self.bidprice if bidask == "ask" else self.askprice
+            # if price == None:
+            # price = self.bidprice if bidask == "ask" else self.askprice
 
             print(bidask, contract, price)
-            if isinstance(contract, sj.contracts.Stock):
-                sample_order = api.Order(
-                    price=price,
-                    quantity=1,
-                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                    price_type=STOCK_PRICE_TYPE_LIMITPRICE,
-                    order_type=STOCK_ORDER_TYPE_COMMON,
-                )
-            else:
-                sample_order = api.Order(
-                    price=price,
-                    quantity=1,
-                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                    price_type=FUTURES_PRICE_TYPE_LMT,
-                    order_type=FUTURES_ORDER_TYPE_ROD,
-                )
+            if contract.security_type == "STK":
+                if price:
+                    sample_order = api.Order(
+                        price=price,
+                        quantity=1,
+                        action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                        price_type=STOCK_PRICE_TYPE_LIMITPRICE,
+                        order_type=STOCK_ORDER_TYPE_COMMON,
+                    )
+                else:
+                    sample_order = api.Order(
+                        price="",
+                        quantity=1,
+                        action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                        price_type=STOCK_PRICE_TYPE_LIMITDOWN
+                        if bidask == "ask"
+                        else STOCK_PRICE_TYPE_LIMITUP,
+                        order_type=STOCK_ORDER_TYPE_COMMON,
+                    )
 
-            api.place_order(contract, sample_order)
+            elif contract.security_type == "FUT":
+                sample_order = api.Order(
+                    price=price if price else 0,
+                    quantity=1,
+                    action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
+                    price_type=FUTURES_PRICE_TYPE_LMT
+                    if price
+                    else FUTURES_PRICE_TYPE_MKP,
+                    order_type=FUTURES_ORDER_TYPE_ROD
+                    if price
+                    else FUTURES_ORDER_TYPE_IOC,
+                )
+            elif contract.security_type == "OPT":
+                pass
+
+            self.parent.rtUpdate.placeorder.emit(contract, sample_order)
+            # print(api.place_order(contract, sample_order))
 
     def update_bidask(self, topic, msg):
         if msg["Code"] != self.selectedCode:
@@ -260,7 +321,6 @@ class trade_widget(QWidget, Ui_Form):
     def update_quote(self, topic, msg):
         if msg["Code"] != self.selectedCode:
             return
-        self.code_edit.setText(msg["CodeName"])
         self.curr_price.display(msg["Close"][0])
         self.diff_price.display(msg["DiffPrice"][0])
         self.tick_vol.display(msg["Volume"][0])
@@ -285,6 +345,7 @@ class trade_widget(QWidget, Ui_Form):
         if self.login:
             self.login()
 
+
 class BidAskDelegate(QtWidgets.QStyledItemDelegate):
     def __init__(self, parent=None):
         QtWidgets.QStyledItemDelegate.__init__(self, parent)
@@ -306,6 +367,7 @@ class BidAskDelegate(QtWidgets.QStyledItemDelegate):
             )
         else:
             QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
+
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
