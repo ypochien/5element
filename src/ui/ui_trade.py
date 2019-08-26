@@ -10,6 +10,7 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
+
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -130,17 +131,36 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
-        self.ask_button.setText(QtWidgets.QApplication.translate("Form", "賣出", None, -1))
-        self.login_button.setText(QtWidgets.QApplication.translate("Form", "Login", None, -1))
-        self.bid_button.setText(QtWidgets.QApplication.translate("Form", "買進", None, -1))
-        self.id_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "ID", None, -1))
-        self.password_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "Password", None, -1))
-        self.bidask_grid.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Form", "委買", None, -1))
-        self.bidask_grid.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Form", "價格", None, -1))
-        self.bidask_grid.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Form", "量", None, -1))
-        self.bidask_grid.horizontalHeaderItem(3).setText(QtWidgets.QApplication.translate("Form", "委賣", None, -1))
+        self.ask_button.setText(
+            QtWidgets.QApplication.translate("Form", "賣出", None, -1)
+        )
+        self.login_button.setText(
+            QtWidgets.QApplication.translate("Form", "Login", None, -1)
+        )
+        self.bid_button.setText(
+            QtWidgets.QApplication.translate("Form", "買進", None, -1)
+        )
+        self.id_edit.setPlaceholderText(
+            QtWidgets.QApplication.translate("Form", "ID", None, -1)
+        )
+        self.password_edit.setPlaceholderText(
+            QtWidgets.QApplication.translate("Form", "Password", None, -1)
+        )
+        self.bidask_grid.horizontalHeaderItem(0).setText(
+            QtWidgets.QApplication.translate("Form", "委買", None, -1)
+        )
+        self.bidask_grid.horizontalHeaderItem(1).setText(
+            QtWidgets.QApplication.translate("Form", "價格", None, -1)
+        )
+        self.bidask_grid.horizontalHeaderItem(2).setText(
+            QtWidgets.QApplication.translate("Form", "量", None, -1)
+        )
+        self.bidask_grid.horizontalHeaderItem(3).setText(
+            QtWidgets.QApplication.translate("Form", "委賣", None, -1)
+        )
         __sortingEnabled = self.bidask_grid.isSortingEnabled()
         self.bidask_grid.setSortingEnabled(False)
         self.bidask_grid.setSortingEnabled(__sortingEnabled)
-        self.code_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "商品代碼", None, -1))
-
+        self.code_edit.setPlaceholderText(
+            QtWidgets.QApplication.translate("Form", "商品代碼", None, -1)
+        )

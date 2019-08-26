@@ -6,15 +6,17 @@ from PySide2.QtCore import QObject, Signal, Slot, QFile
 from shioaji.constant import *
 import shioaji as sj
 import asyncio
-import ui
+import platform
 from ui.ui_mainWindow import Ui_MainWindow
 from ui.ui_quotereport import Ui_QouteReport
 from ui.ui_trade import Ui_Form
+from dataclasses import dataclass
+
+
 
 class RTUpdate(QObject):
     caller = Signal((str, dict))
     placeorder = Signal((sj.contracts.Contract, sj.order.Order))
-
 
 
 class mainUI(QMainWindow, Ui_MainWindow):
@@ -114,9 +116,11 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.trade.code_edit.repaint()
             return
 
-        self.api.activate_ca(
-            f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
-        )
+        if "Darwin" != platform.system():
+            print("Darwin",platform.system())
+            self.api.activate_ca(
+                f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
+            )
 
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
@@ -129,7 +133,6 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.api.quote.subscribe(
             self.api.Contracts.Futures["MXFI9"], quote_type="bidask"
         )
-
 
 
 class quote_report_widget(QWidget, Ui_QouteReport):
@@ -351,6 +354,8 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    sysstr = platform.system()
+    print(sysstr)
     # at Windows - ['windowsvista', 'Windows', 'Fusion']
     # print(QtWidgets.QStyleFactory.keys())
     window = mainUI()

@@ -4,8 +4,10 @@
         "tests"
     ],
     "python.envFile": ".env"  ,
+    "python.formatting.blackArgs": ["--line-length", "120"],
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": false,
-    "python.testing.promptToConfigure": false
+    "python.testing.promptToConfigure": false,
+    "python.formatting.provider": "black"
 }
