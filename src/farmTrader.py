@@ -3,13 +3,10 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QTableWidgetItem
 from PySide2.QtCore import QObject, Signal, Slot, QFile
-from ui_mainWindow import Ui_MainWindow
-from ui_trade import Ui_Form
-from ui_quotereport import Ui_QouteReport
 from shioaji.constant import *
 import shioaji as sj
 import asyncio
-
+import ui
 
 class RTUpdate(QObject):
     caller = Signal((str, dict))
@@ -130,26 +127,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
             self.api.Contracts.Futures["MXFI9"], quote_type="bidask"
         )
 
-<<<<<<< HEAD:5element/farmTrader.py
-=======
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4968"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["2330"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["2330"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["2383"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["2383"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4947"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4947"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4935"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4935"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4142"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["4736"], quote_type="bidask")
-        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"])
-        self.api.quote.subscribe(self.api.Contracts.Stocks["6664"], quote_type="bidask")
 
->>>>>>> a7ef9caebfcaafb1c1520b8edbba0d9c1aa04f7a:src/farmTrader.py
 
 class quote_report_widget(QWidget, Ui_QouteReport):
     def __init__(self, parent):
@@ -187,10 +165,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         for k, v in self.raw.items():
             for coln, i in enumerate(v):
                 item = QtGui.QStandardItem(i)
-                try:
-                    model.setItem(rown, coln, item)
-                except expression as identifier:
-                    print(identifier)
+                model.setItem(rown, coln, item)
 
             rown += 1
 

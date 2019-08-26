@@ -1,11 +1,11 @@
 typehint:
-	mypy 5element/ tests/
+	mypy src/ tests/
 
 test:
 	pytest tests/
 
 lint:
-	pylint 5element/ tests/
+	pylint src/ tests/
 
 checklist:	lint typehint test
 
