@@ -1,7 +1,3 @@
-0
-1
-2
-3
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'ui/trade.ui',

@@ -7,6 +7,9 @@ from shioaji.constant import *
 import shioaji as sj
 import asyncio
 import ui
+from ui.ui_mainWindow import Ui_MainWindow
+from ui.ui_quotereport import Ui_QouteReport
+from ui.ui_trade import Ui_Form
 
 class RTUpdate(QObject):
     caller = Signal((str, dict))
