@@ -122,7 +122,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         api.get_stock_account_unreal_profitloss().update()
         for item in api.get_stock_account_unreal_profitloss().data()["summary"]:
             if api.Contracts.Stocks[item["stock"]] == None:
-                print(f'以下市{item["stock"]}')
+                print(f'已下市{item["stock"]}')
                 continue
             api.quote.subscribe(api.Contracts.Stocks[item["stock"]])
             api.quote.subscribe(api.Contracts.Stocks[item["stock"]], quote_type="bidask")
@@ -310,12 +310,14 @@ class trade_widget(QWidget, Ui_Form):
         api = self.parent.api
         api.get_stock_account_unreal_profitloss().update()
         unreals_summary = api.get_stock_account_unreal_profitloss().data()["summary"]
+        text_unreal = ""
         for item in unreals_summary:
             if code != item["stock"]:
                 continue
-            text_unreal = f"{item['avgprice']}/{int(item['real_qty'])/1000}/{item['unreal']}"
-            self.unreal_profit_edit.setText(text_unreal)
-            self.unreal_profit_edit.repaint()
+            text_unreal = f"均價: {item['avgprice']} / 庫存: {int(item['real_qty'])//1000} / 損益: {item['unreal']}"
+            break
+        self.unreal_profit_edit.setText(text_unreal)
+        self.unreal_profit_edit.repaint()
 
     @Slot()
     def _login(self):

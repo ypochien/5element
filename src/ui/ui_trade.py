@@ -7,7 +7,7 @@
 # Form implementation generated from reading ui file 'trade.ui',
 # licensing of 'trade.ui' applies.
 #
-# Created: Tue Aug 27 10:34:49 2019
+# Created: Tue Aug 27 11:55:11 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_Form(object):
         font.setBold(True)
         Form.setFont(font)
         self.ask_button = QtWidgets.QPushButton(Form)
-        self.ask_button.setGeometry(QtCore.QRect(220, 114, 51, 25))
+        self.ask_button.setGeometry(QtCore.QRect(220, 56, 51, 25))
         self.ask_button.setObjectName("ask_button")
         self.curr_price = QtWidgets.QLCDNumber(Form)
         self.curr_price.setGeometry(QtCore.QRect(10, 85, 80, 28))
@@ -65,7 +65,7 @@ class Ui_Form(object):
         self.tick_vol.setProperty("intValue", 0)
         self.tick_vol.setObjectName("tick_vol")
         self.bid_button = QtWidgets.QPushButton(Form)
-        self.bid_button.setGeometry(QtCore.QRect(10, 115, 51, 24))
+        self.bid_button.setGeometry(QtCore.QRect(160, 56, 51, 24))
         self.bid_button.setObjectName("bid_button")
         self.total_vol = QtWidgets.QLCDNumber(Form)
         self.total_vol.setGeometry(QtCore.QRect(190, 85, 80, 27))
@@ -126,14 +126,17 @@ class Ui_Form(object):
         self.bidask_grid.verticalHeader().setVisible(False)
         self.bidask_grid.verticalHeader().setDefaultSectionSize(23)
         self.code_edit = QtWidgets.QLineEdit(Form)
-        self.code_edit.setGeometry(QtCore.QRect(20, 53, 242, 30))
+        self.code_edit.setGeometry(QtCore.QRect(20, 53, 131, 30))
         self.code_edit.setObjectName("code_edit")
         self.unreal_profit_edit = QtWidgets.QLineEdit(Form)
-        self.unreal_profit_edit.setGeometry(QtCore.QRect(65, 117, 150, 20))
+        self.unreal_profit_edit.setGeometry(QtCore.QRect(10, 117, 270, 20))
         font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(11)
+        font.setFamily("Century Gothic")
+        font.setPointSize(10)
         self.unreal_profit_edit.setFont(font)
+        self.unreal_profit_edit.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
+        self.unreal_profit_edit.setReadOnly(True)
+        self.unreal_profit_edit.setPlaceholderText("")
         self.unreal_profit_edit.setObjectName("unreal_profit_edit")
 
         self.retranslateUi(Form)

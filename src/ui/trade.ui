@@ -37,7 +37,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>114</y>
+     <y>56</y>
      <width>51</width>
      <height>25</height>
     </rect>
@@ -151,8 +151,8 @@
   <widget class="QPushButton" name="bid_button">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>115</y>
+     <x>160</x>
+     <y>56</y>
      <width>51</width>
      <height>24</height>
     </rect>
@@ -374,7 +374,7 @@
     <rect>
      <x>20</x>
      <y>53</y>
-     <width>242</width>
+     <width>131</width>
      <height>30</height>
     </rect>
    </property>
@@ -385,17 +385,26 @@
   <widget class="QLineEdit" name="unreal_profit_edit">
    <property name="geometry">
     <rect>
-     <x>65</x>
+     <x>10</x>
      <y>117</y>
-     <width>150</width>
+     <width>270</width>
      <height>20</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Arial Black</family>
-     <pointsize>11</pointsize>
+     <family>Century Gothic</family>
+     <pointsize>10</pointsize>
     </font>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+   <property name="placeholderText">
+    <string/>
    </property>
   </widget>
  </widget>
