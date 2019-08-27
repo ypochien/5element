@@ -36,10 +36,10 @@
   <widget class="QPushButton" name="ask_button">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>113</y>
-     <width>111</width>
-     <height>26</height>
+     <x>220</x>
+     <y>114</y>
+     <width>51</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="text">
@@ -151,10 +151,10 @@
   <widget class="QPushButton" name="bid_button">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>113</y>
-     <width>111</width>
-     <height>26</height>
+     <x>10</x>
+     <y>115</y>
+     <width>51</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="text">
@@ -380,6 +380,22 @@
    </property>
    <property name="placeholderText">
     <string>商品代碼</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="unreal_profit_edit">
+   <property name="geometry">
+    <rect>
+     <x>65</x>
+     <y>117</y>
+     <width>150</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Black</family>
+     <pointsize>11</pointsize>
+    </font>
    </property>
   </widget>
  </widget>

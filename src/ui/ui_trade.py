@@ -1,15 +1,18 @@
+0
+1
+2
+3
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/trade.ui',
-# licensing of 'ui/trade.ui' applies.
+# Form implementation generated from reading ui file 'trade.ui',
+# licensing of 'trade.ui' applies.
 #
-# Created: Thu Aug 22 00:40:09 2019
+# Created: Tue Aug 27 10:34:49 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
-
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -24,7 +27,7 @@ class Ui_Form(object):
         font.setBold(True)
         Form.setFont(font)
         self.ask_button = QtWidgets.QPushButton(Form)
-        self.ask_button.setGeometry(QtCore.QRect(140, 113, 111, 26))
+        self.ask_button.setGeometry(QtCore.QRect(220, 114, 51, 25))
         self.ask_button.setObjectName("ask_button")
         self.curr_price = QtWidgets.QLCDNumber(Form)
         self.curr_price.setGeometry(QtCore.QRect(10, 85, 80, 28))
@@ -62,7 +65,7 @@ class Ui_Form(object):
         self.tick_vol.setProperty("intValue", 0)
         self.tick_vol.setObjectName("tick_vol")
         self.bid_button = QtWidgets.QPushButton(Form)
-        self.bid_button.setGeometry(QtCore.QRect(20, 113, 111, 26))
+        self.bid_button.setGeometry(QtCore.QRect(10, 115, 51, 24))
         self.bid_button.setObjectName("bid_button")
         self.total_vol = QtWidgets.QLCDNumber(Form)
         self.total_vol.setGeometry(QtCore.QRect(190, 85, 80, 27))
@@ -125,42 +128,30 @@ class Ui_Form(object):
         self.code_edit = QtWidgets.QLineEdit(Form)
         self.code_edit.setGeometry(QtCore.QRect(20, 53, 242, 30))
         self.code_edit.setObjectName("code_edit")
+        self.unreal_profit_edit = QtWidgets.QLineEdit(Form)
+        self.unreal_profit_edit.setGeometry(QtCore.QRect(65, 117, 150, 20))
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(11)
+        self.unreal_profit_edit.setFont(font)
+        self.unreal_profit_edit.setObjectName("unreal_profit_edit")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QtWidgets.QApplication.translate("Form", "Form", None, -1))
-        self.ask_button.setText(
-            QtWidgets.QApplication.translate("Form", "賣出", None, -1)
-        )
-        self.login_button.setText(
-            QtWidgets.QApplication.translate("Form", "Login", None, -1)
-        )
-        self.bid_button.setText(
-            QtWidgets.QApplication.translate("Form", "買進", None, -1)
-        )
-        self.id_edit.setPlaceholderText(
-            QtWidgets.QApplication.translate("Form", "ID", None, -1)
-        )
-        self.password_edit.setPlaceholderText(
-            QtWidgets.QApplication.translate("Form", "Password", None, -1)
-        )
-        self.bidask_grid.horizontalHeaderItem(0).setText(
-            QtWidgets.QApplication.translate("Form", "委買", None, -1)
-        )
-        self.bidask_grid.horizontalHeaderItem(1).setText(
-            QtWidgets.QApplication.translate("Form", "價格", None, -1)
-        )
-        self.bidask_grid.horizontalHeaderItem(2).setText(
-            QtWidgets.QApplication.translate("Form", "量", None, -1)
-        )
-        self.bidask_grid.horizontalHeaderItem(3).setText(
-            QtWidgets.QApplication.translate("Form", "委賣", None, -1)
-        )
+        self.ask_button.setText(QtWidgets.QApplication.translate("Form", "賣出", None, -1))
+        self.login_button.setText(QtWidgets.QApplication.translate("Form", "Login", None, -1))
+        self.bid_button.setText(QtWidgets.QApplication.translate("Form", "買進", None, -1))
+        self.id_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "ID", None, -1))
+        self.password_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "Password", None, -1))
+        self.bidask_grid.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Form", "委買", None, -1))
+        self.bidask_grid.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Form", "價格", None, -1))
+        self.bidask_grid.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Form", "量", None, -1))
+        self.bidask_grid.horizontalHeaderItem(3).setText(QtWidgets.QApplication.translate("Form", "委賣", None, -1))
         __sortingEnabled = self.bidask_grid.isSortingEnabled()
         self.bidask_grid.setSortingEnabled(False)
         self.bidask_grid.setSortingEnabled(__sortingEnabled)
-        self.code_edit.setPlaceholderText(
-            QtWidgets.QApplication.translate("Form", "商品代碼", None, -1)
-        )
+        self.code_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "商品代碼", None, -1))
+

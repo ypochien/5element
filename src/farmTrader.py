@@ -13,7 +13,6 @@ from ui.ui_trade import Ui_Form
 from dataclasses import dataclass
 
 
-
 class RTUpdate(QObject):
     caller = Signal((str, dict))
     placeorder = Signal((sj.contracts.Contract, sj.order.Order))
@@ -45,12 +44,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         """"""
         topic_type = topic.split("/")[0]
         code = topic.split("/")[-1]
-        {
-            "MKT": self.proc_mkt,
-            "QUT": self.proc_qut,
-            "Q": self.proc_q,
-            "L": self.proc_l,
-        }[topic_type](code, msg)
+        {"MKT": self.proc_mkt, "QUT": self.proc_qut, "Q": self.proc_q, "L": self.proc_l}[topic_type](code, msg)
 
     def proc_mkt(self, code, msg):
         """
@@ -105,10 +99,7 @@ class mainUI(QMainWindow, Ui_MainWindow):
         # self.rt_worker(topic, msg)
 
     def login(self):
-        user = {
-            "uid": self.trade.id_edit.text(),
-            "password": self.trade.password_edit.text(),
-        }
+        user = {"uid": self.trade.id_edit.text(), "password": self.trade.password_edit.text()}
         try:
             self.api.login(user["uid"], user["password"])
         except asyncio.TimeoutError:
@@ -117,22 +108,24 @@ class mainUI(QMainWindow, Ui_MainWindow):
             return
 
         if "Darwin" != platform.system():
-            print("Darwin",platform.system())
-            self.api.activate_ca(
-                f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"]
-            )
+            print("Darwin", platform.system())
+            self.api.activate_ca(f"C:/ekey/551/{user['uid']}/SinoPac.pfx", user["uid"], user["uid"])
 
         self.trade.login_button.setText("已登入")
         self.trade.login_button.repaint()
-        self.api.quote.set_callback(self.quote_msg)
-        self.api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])
-        self.api.quote.subscribe(
-            self.api.Contracts.Futures["TXFI9"], quote_type="bidask"
-        )
-        self.api.quote.subscribe(self.api.Contracts.Futures["MXFI9"])
-        self.api.quote.subscribe(
-            self.api.Contracts.Futures["MXFI9"], quote_type="bidask"
-        )
+        api = self.api
+        api.quote.set_callback(self.quote_msg)
+        api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])
+        api.quote.subscribe(self.api.Contracts.Futures["TXFI9"], quote_type="bidask")
+        api.quote.subscribe(self.api.Contracts.Futures["MXFI9"])
+        api.quote.subscribe(self.api.Contracts.Futures["MXFI9"], quote_type="bidask")
+        api.get_stock_account_unreal_profitloss().update()
+        for item in api.get_stock_account_unreal_profitloss().data()["summary"]:
+            if api.Contracts.Stocks[item["stock"]] == None:
+                print(f'以下市{item["stock"]}')
+                continue
+            api.quote.subscribe(api.Contracts.Stocks[item["stock"]])
+            api.quote.subscribe(api.Contracts.Stocks[item["stock"]], quote_type="bidask")
 
 
 class quote_report_widget(QWidget, Ui_QouteReport):
@@ -164,6 +157,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             )
             codename = f"{code} {contract['name']}"
             self.parent.trade.code_edit.setText(codename)
+            self.parent.trade.update_unreal(code)
 
     def load_data(self):
         model = self.model
@@ -176,13 +170,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
             rown += 1
 
     def update_quote(self, code, msg):
-        self.raw[code] = [
-            msg["Code"],
-            str(msg["Close"][0]),
-            str(msg["Volume"][0]),
-            str(msg["VolSum"][0]),
-            msg["Time"],
-        ]
+        self.raw[code] = [msg["Code"], str(msg["Close"][0]), str(msg["Volume"][0]), str(msg["VolSum"][0]), msg["Time"]]
         self.load_data()
 
 
@@ -251,9 +239,7 @@ class trade_widget(QWidget, Ui_Form):
                         price="",
                         quantity=1,
                         action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                        price_type=STOCK_PRICE_TYPE_LIMITDOWN
-                        if bidask == "ask"
-                        else STOCK_PRICE_TYPE_LIMITUP,
+                        price_type=STOCK_PRICE_TYPE_LIMITDOWN if bidask == "ask" else STOCK_PRICE_TYPE_LIMITUP,
                         order_type=STOCK_ORDER_TYPE_COMMON,
                     )
 
@@ -262,12 +248,8 @@ class trade_widget(QWidget, Ui_Form):
                     price=price if price else 0,
                     quantity=1,
                     action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
-                    price_type=FUTURES_PRICE_TYPE_LMT
-                    if price
-                    else FUTURES_PRICE_TYPE_MKP,
-                    order_type=FUTURES_ORDER_TYPE_ROD
-                    if price
-                    else FUTURES_ORDER_TYPE_IOC,
+                    price_type=FUTURES_PRICE_TYPE_LMT if price else FUTURES_PRICE_TYPE_MKP,
+                    order_type=FUTURES_ORDER_TYPE_ROD if price else FUTURES_ORDER_TYPE_IOC,
                 )
             elif contract.security_type == "OPT":
                 pass
@@ -302,6 +284,7 @@ class trade_widget(QWidget, Ui_Form):
     def update_quote(self, topic, msg):
         if msg["Code"] != self.selectedCode:
             return
+
         self.curr_price.display(msg["Close"][0])
         self.diff_price.display(msg["DiffPrice"][0])
         self.tick_vol.display(msg["Volume"][0])
@@ -320,6 +303,19 @@ class trade_widget(QWidget, Ui_Form):
         if str(msg["Close"][0]) == bid:
             tableWidget.setItem(4, 2, itemClear)
             tableWidget.setItem(5, 2, item)
+
+        self.update_unreal(msg["Code"])
+
+    def update_unreal(self, code):
+        api = self.parent.api
+        api.get_stock_account_unreal_profitloss().update()
+        unreals_summary = api.get_stock_account_unreal_profitloss().data()["summary"]
+        for item in unreals_summary:
+            if code != item["stock"]:
+                continue
+            text_unreal = f"{item['avgprice']}/{int(item['real_qty'])/1000}/{item['unreal']}"
+            self.unreal_profit_edit.setText(text_unreal)
+            self.unreal_profit_edit.repaint()
 
     @Slot()
     def _login(self):
@@ -343,9 +339,7 @@ class BidAskDelegate(QtWidgets.QStyledItemDelegate):
             self.progressbaroption.text = f"{data}"
             self.progressbaroption.textVisible = True
 
-            QtWidgets.QApplication.style().drawControl(
-                QtWidgets.QStyle.CE_ProgressBar, self.progressbaroption, painter
-            )
+            QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_ProgressBar, self.progressbaroption, painter)
         else:
             QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
 
