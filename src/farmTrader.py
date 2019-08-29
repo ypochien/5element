@@ -183,6 +183,7 @@ class trade_widget(QWidget, Ui_Form):
         self.login = None
         self.bidprice = None
         self.askprice = None
+        self.profit_update = False
         self.login_button.clicked.connect(self._login)
         delegate = BidAskDelegate(self.bidask_grid)
         self.bidask_grid.setItemDelegateForColumn(0, delegate)
@@ -255,6 +256,7 @@ class trade_widget(QWidget, Ui_Form):
                 pass
 
             self.parent.rtUpdate.placeorder.emit(contract, sample_order)
+            self.profit_update = True
             # print(api.place_order(contract, sample_order))
 
     def update_bidask(self, topic, msg):
@@ -308,7 +310,9 @@ class trade_widget(QWidget, Ui_Form):
 
     def update_unreal(self, code):
         api = self.parent.api
-        api.get_stock_account_unreal_profitloss().update()
+        if self.profit_update:
+            api.get_stock_account_unreal_profitloss().update()
+            self.profit_update = False
         unreals_summary = api.get_stock_account_unreal_profitloss().data()["summary"]
         text_unreal = ""
         for item in unreals_summary:
