@@ -1,18 +1,15 @@
-0
-1
-2
-3
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'trade.ui',
-# licensing of 'trade.ui' applies.
+# Form implementation generated from reading ui file 'ui/trade.ui',
+# licensing of 'ui/trade.ui' applies.
 #
-# Created: Tue Aug 27 11:55:11 2019
+# Created: Thu Aug 29 12:31:37 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -51,7 +48,7 @@ class Ui_Form(object):
         self.diff_price.setProperty("intValue", 0)
         self.diff_price.setObjectName("diff_price")
         self.login_button = QtWidgets.QPushButton(Form)
-        self.login_button.setGeometry(QtCore.QRect(160, 10, 100, 40))
+        self.login_button.setGeometry(QtCore.QRect(160, 10, 70, 40))
         self.login_button.setFlat(False)
         self.login_button.setObjectName("login_button")
         self.tick_vol = QtWidgets.QLCDNumber(Form)
@@ -134,10 +131,16 @@ class Ui_Form(object):
         font.setFamily("Century Gothic")
         font.setPointSize(10)
         self.unreal_profit_edit.setFont(font)
-        self.unreal_profit_edit.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
+        self.unreal_profit_edit.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignVCenter)
         self.unreal_profit_edit.setReadOnly(True)
         self.unreal_profit_edit.setPlaceholderText("")
         self.unreal_profit_edit.setObjectName("unreal_profit_edit")
+        self.qty_spin = QtWidgets.QSpinBox(Form)
+        self.qty_spin.setGeometry(QtCore.QRect(234, 20, 50, 22))
+        self.qty_spin.setMaximum(50)
+        self.qty_spin.setSingleStep(5)
+        self.qty_spin.setProperty("value", 1)
+        self.qty_spin.setObjectName("qty_spin")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

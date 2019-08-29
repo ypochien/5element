@@ -161,13 +161,13 @@ class quote_report_widget(QWidget, Ui_QouteReport):
 
     def load_data(self):
         model = self.model
-        rown = 0
+        row_n = 0
         for k, v in self.raw.items():
             for coln, i in enumerate(v):
                 item = QtGui.QStandardItem(i)
-                model.setItem(rown, coln, item)
+                model.setItem(row_n, coln, item)
 
-            rown += 1
+            row_n += 1
 
     def update_quote(self, code, msg):
         self.raw[code] = [msg["Code"], str(msg["Close"][0]), str(msg["Volume"][0]), str(msg["VolSum"][0]), msg["Time"]]
@@ -229,7 +229,7 @@ class trade_widget(QWidget, Ui_Form):
                 if price:
                     sample_order = api.Order(
                         price=price,
-                        quantity=1,
+                        quantity=self.qty_spin.value(),
                         action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                         price_type=STOCK_PRICE_TYPE_LIMITPRICE,
                         order_type=STOCK_ORDER_TYPE_COMMON,
@@ -237,7 +237,7 @@ class trade_widget(QWidget, Ui_Form):
                 else:
                     sample_order = api.Order(
                         price="",
-                        quantity=1,
+                        quantity=self.qty_spin.value(),
                         action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                         price_type=STOCK_PRICE_TYPE_LIMITDOWN if bidask == "ask" else STOCK_PRICE_TYPE_LIMITUP,
                         order_type=STOCK_ORDER_TYPE_COMMON,
@@ -246,7 +246,7 @@ class trade_widget(QWidget, Ui_Form):
             elif contract.security_type == "FUT":
                 sample_order = api.Order(
                     price=price if price else 0,
-                    quantity=1,
+                    quantity=self.qty_spin.value(),
                     action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                     price_type=FUTURES_PRICE_TYPE_LMT if price else FUTURES_PRICE_TYPE_MKP,
                     order_type=FUTURES_ORDER_TYPE_ROD if price else FUTURES_ORDER_TYPE_IOC,
