@@ -1,4 +1,5 @@
 import sys
+import requests
 from PySide2.QtUiTools import QUiLoader
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QTableWidgetItem
@@ -33,6 +34,10 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.rtUpdate = RTUpdate()
         self.rtUpdate.caller.connect(self.rt_worker)
         self.rtUpdate.placeorder.connect(self.placeorder_worker)
+        url = "https://service.sinotrade.com.tw/api/v1/codeList/stock_code"
+        result = requests.get(url).json()
+        stock = result["result"]
+        self.stock_list = {item["code"]: item for item in stock}
         self.api = sj.Shioaji()
 
     @Slot(sj.contracts.Contract, sj.order.Order)
@@ -54,7 +59,10 @@ class mainUI(QMainWindow, Ui_MainWindow):
 
         msg["Code"] = code
         msg["CodeName"] = f"{code} {self.api.Contracts.Stocks[code]['name']}"
-        msg["DiffPrice"] = [0]
+
+        stock_list = self.stock_list
+        ref_price = stock_list.get(code, {}).get("reference", 0)
+        msg["DiffPrice"] = [msg["Close"][0] - ref_price]
         self.trade.update_quote(code, msg)
         self.quote_report.update_quote(code, msg)
 
@@ -136,7 +144,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         self.raw = dict()
         self.model = QtGui.QStandardItemModel()
         self.quotereport.setModel(self.model)
-        header = ["商品", "成交價", "單量", "成交量", "時間"]
+        header = ["商品", "成交價","漲跌", "單量", "成交量", "時間"]
         for i, v in enumerate(header):
             item = QtGui.QStandardItem(v)
             self.model.setHorizontalHeaderItem(i, item)
@@ -227,7 +235,7 @@ class trade_widget(QWidget, Ui_Form):
             # if price == None:
             # price = self.bidprice if bidask == "ask" else self.askprice
 
-            print(bidask, contract, price)
+            print(self.day_trading_cb.isChecked(), bidask, contract, price)
             if contract.security_type == "STK":
                 if price:
                     sample_order = api.Order(
