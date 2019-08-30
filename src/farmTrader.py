@@ -205,6 +205,8 @@ class trade_widget(QWidget, Ui_Form):
             self.bid_placeorder(price=price)
         if price and col == 3:
             self.ask_placeorder(price=price)
+        if price and col == 2:
+            self.profit_update = True
 
     def bid_placeorder(self, price=None):
         self.place_order("bid", price)
@@ -230,6 +232,7 @@ class trade_widget(QWidget, Ui_Form):
                 if price:
                     sample_order = api.Order(
                         price=price,
+                        first_sell=STOCK_FIRST_SELL_YES if self.day_trading_cb.isChecked() else STOCK_FIRST_SELL_NO,
                         quantity=self.qty_spin.value(),
                         action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                         price_type=STOCK_PRICE_TYPE_LIMITPRICE,
@@ -237,7 +240,8 @@ class trade_widget(QWidget, Ui_Form):
                     )
                 else:
                     sample_order = api.Order(
-                        price="",
+                        price=0,
+                        first_sell=STOCK_FIRST_SELL_YES if self.day_trading_cb.isChecked() else STOCK_FIRST_SELL_NO,
                         quantity=self.qty_spin.value(),
                         action=ACTION_SELL if bidask == "ask" else ACTION_BUY,
                         price_type=STOCK_PRICE_TYPE_LIMITDOWN if bidask == "ask" else STOCK_PRICE_TYPE_LIMITUP,
@@ -256,7 +260,6 @@ class trade_widget(QWidget, Ui_Form):
                 pass
 
             self.parent.rtUpdate.placeorder.emit(contract, sample_order)
-            self.profit_update = True
             # print(api.place_order(contract, sample_order))
 
     def update_bidask(self, topic, msg):

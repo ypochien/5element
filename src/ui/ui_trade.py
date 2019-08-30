@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/trade.ui',
-# licensing of 'ui/trade.ui' applies.
+# Form implementation generated from reading ui file 'trade.ui',
+# licensing of 'trade.ui' applies.
 #
-# Created: Thu Aug 29 12:31:37 2019
+# Created: Fri Aug 30 08:10:54 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,7 +48,7 @@ class Ui_Form(object):
         self.diff_price.setProperty("intValue", 0)
         self.diff_price.setObjectName("diff_price")
         self.login_button = QtWidgets.QPushButton(Form)
-        self.login_button.setGeometry(QtCore.QRect(160, 10, 70, 40))
+        self.login_button.setGeometry(QtCore.QRect(150, 10, 60, 40))
         self.login_button.setFlat(False)
         self.login_button.setObjectName("login_button")
         self.tick_vol = QtWidgets.QLCDNumber(Form)
@@ -136,11 +136,14 @@ class Ui_Form(object):
         self.unreal_profit_edit.setPlaceholderText("")
         self.unreal_profit_edit.setObjectName("unreal_profit_edit")
         self.qty_spin = QtWidgets.QSpinBox(Form)
-        self.qty_spin.setGeometry(QtCore.QRect(234, 20, 50, 22))
-        self.qty_spin.setMaximum(50)
+        self.qty_spin.setGeometry(QtCore.QRect(220, 30, 60, 22))
+        self.qty_spin.setMaximum(100)
         self.qty_spin.setSingleStep(5)
         self.qty_spin.setProperty("value", 1)
         self.qty_spin.setObjectName("qty_spin")
+        self.day_trading_cb = QtWidgets.QCheckBox(Form)
+        self.day_trading_cb.setGeometry(QtCore.QRect(220, 10, 73, 16))
+        self.day_trading_cb.setObjectName("day_trading_cb")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -160,4 +163,5 @@ class Ui_Form(object):
         self.bidask_grid.setSortingEnabled(False)
         self.bidask_grid.setSortingEnabled(__sortingEnabled)
         self.code_edit.setPlaceholderText(QtWidgets.QApplication.translate("Form", "商品代碼", None, -1))
+        self.day_trading_cb.setText(QtWidgets.QApplication.translate("Form", "先賣", None, -1))
 
