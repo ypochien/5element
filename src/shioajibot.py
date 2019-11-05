@@ -68,14 +68,18 @@ async def echo(message: types.Message):
     """
     rtn = message.text
     if message["from"]["username"] == "ypochien" and message["text"][0:2] == "ha":
-        _, code, bs, qty = message["text"].split(",")
+        _, code, bs, price,qty,first = message["text"].split(",")
         contract = api.Contracts.Stocks[code]
+        if price == 0:
+            price_type=STOCK_PRICE_TYPE_LIMITDOWN if bs == "s" else STOCK_PRICE_TYPE_LIMITUP
+        else :
+            price_type=STOCK_PRICE_TYPE_LIMITPRICE
         sample_order = api.Order(
-            price=0,
-            first_sell=STOCK_FIRST_SELL_NO,
+            price= price,
+            first_sell=STOCK_FIRST_SELL_NO if first==0 else STOCK_FIRST_SELL_YES,
             quantity=qty,
             action=ACTION_SELL if bs == "s" else ACTION_BUY,
-            price_type=STOCK_PRICE_TYPE_LIMITDOWN if bs == "s" else STOCK_PRICE_TYPE_LIMITUP,
+            price_type=price_type,
             order_type=STOCK_ORDER_TYPE_COMMON,
         )
         rtn = api.place_order(contract, sample_order)
