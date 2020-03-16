@@ -123,10 +123,11 @@ class mainUI(QMainWindow, Ui_MainWindow):
         self.trade.login_button.repaint()
         api = self.api
         api.quote.set_callback(self.quote_msg)
-        api.quote.subscribe(self.api.Contracts.Futures["TXFI9"])
-        api.quote.subscribe(self.api.Contracts.Futures["TXFI9"], quote_type="bidask")
-        api.quote.subscribe(self.api.Contracts.Futures["MXFI9"])
-        api.quote.subscribe(self.api.Contracts.Futures["MXFI9"], quote_type="bidask")
+        api.quote.subscribe(self.api.Contracts.Futures.TXF["TXFC0"])
+        api.quote.subscribe(self.api.Contracts.Futures.TXF["TXFC0"], quote_type="bidask")
+        api.quote.subscribe(self.api.Contracts.Futures.TXF["MXFC0"])
+        api.quote.subscribe(self.api.Contracts.Futures.TXF["MXFC0"], quote_type="bidask")
+
         api.get_stock_account_unreal_profitloss().update()
         for item in api.get_stock_account_unreal_profitloss().data()["summary"]:
             if api.Contracts.Stocks[item["stock"]] == None:
@@ -144,7 +145,7 @@ class quote_report_widget(QWidget, Ui_QouteReport):
         self.raw = dict()
         self.model = QtGui.QStandardItemModel()
         self.quotereport.setModel(self.model)
-        header = ["商品", "成交價","漲跌", "單量", "成交量", "時間"]
+        header = ["商品", "成交價", "漲跌", "單量", "成交量", "時間"]
         for i, v in enumerate(header):
             item = QtGui.QStandardItem(v)
             self.model.setHorizontalHeaderItem(i, item)
@@ -204,8 +205,9 @@ class trade_widget(QWidget, Ui_Form):
     def sub_new_code(self):
         code = self.code_edit.text()
         api = self.parent.api
-        api.quote.subscribe(api.Contracts.Stocks[code])
-        api.quote.subscribe(api.Contracts.Stocks[code], quote_type="bidask")
+        c = api.Contracts.Stocks.TSE[code] if api.Contracts.Stocks[code] else api.Contracts.Futures.TXF[code]
+        api.quote.subscribe(c)
+        api.quote.subscribe(c, quote_type="bidask")
 
     def hander_click(self, row, col):
         price = self.bidask_grid.item(row, 1).text()
